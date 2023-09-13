@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
     if (category) {
       filter.category = category;
     }
-    res.status(200).send(await Product.find(filter));
+    res.status(200).send(await Product.find(filter).sort({ _id: -1 }));
   } catch (error) {
     res.status(400).send({ message: "Product not found" });
   }
@@ -32,6 +32,7 @@ router.post("/", async (req, res) => {
       description: req.body.description,
       price: req.body.price,
       category: req.body.category,
+      image: req.body.image,
     });
     await newProduct.save();
     res.status(200).send(newProduct);
