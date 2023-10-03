@@ -12,7 +12,6 @@ router.post("/", async (req, res) => {
     const billplz_paid = req.body.billplz_paid;
     const billplz_paid_at = req.body.billplz_paid_at;
     const billplz_x_signature = req.body.billplz_x_signature;
-    console.log(billplz_id);
     // verify the signature
     const billplz_string = `billplzid${billplz_id}|billplzpaid_at${billplz_paid_at}|billplzpaid${billplz_paid}`;
     const x_signature = crypto

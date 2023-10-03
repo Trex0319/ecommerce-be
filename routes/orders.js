@@ -10,7 +10,10 @@ const {
   BILLPLZ_COLLECTION_ID,
 } = require("../config");
 
-router.get("/", async (req, res) => {
+const authMiddleware = require("../middleware/auth");
+const isAdmin = require("../middleware/isAdmin");
+
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const { status } = req.query;
     let filter = {};
@@ -18,13 +21,18 @@ router.get("/", async (req, res) => {
     if (status) {
       filter.status = status;
     }
-    res.status(200).send(await Order.find(filter).populate("products"));
+    if (req.user && req.user.role === "user") {
+      filter.customerEmail = req.user.email;
+    }
+    res
+      .status(200)
+      .send(await Order.find(filter).populate("products").sort({ _id: -1 }));
   } catch (error) {
     res.status(400).send({ message: "Order not found" });
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", authMiddleware, async (req, res) => {
   try {
     const data = await Order.findOne({ _id: req.params.id });
     res.status(200).send(data);
@@ -73,7 +81,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", isAdmin, async (req, res) => {
   try {
     const order_id = req.params.id;
 
@@ -86,7 +94,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", isAdmin, async (req, res) => {
   try {
     const order_id = req.params.id;
 

@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 const Product = require("../models/product");
+const authMiddleware = require("../middleware/auth");
+const isAdmin = require("../middleware/isAdmin");
 
 router.get("/", async (req, res) => {
   try {
@@ -25,7 +27,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", isAdmin, async (req, res) => {
   try {
     const newProduct = new Product({
       name: req.body.name,
@@ -41,7 +43,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", isAdmin, async (req, res) => {
   try {
     const product_id = req.params.id;
 
@@ -59,7 +61,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", isAdmin, async (req, res) => {
   try {
     const product_id = req.params.id;
     const deletePro = await Product.findByIdAndDelete(product_id);
